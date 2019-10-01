@@ -9,9 +9,11 @@ class Motif {
 public:
   string getMotifName(const int& x) { return motifName[x]; }
   int getNumTranscriptionBindingSites(const int& x) { return numTranscriptionBindingSites[x]; }
-  void setNumTranscriptionBindingSites(int& x, int& y) { numTranscriptionBindingSites[y] = x; }
+  void setNumTranscriptionBindingSites(const int& x, const int& y) { numTranscriptionBindingSites[y] = x; }
   void readMotifNames(fstream& fin);
   int getMaxMotif();
+  void updateBindingSites(const int& x);
+  void displayNameAndNumSites();
 private:
   string motifName[244];
   int numTranscriptionBindingSites[244];

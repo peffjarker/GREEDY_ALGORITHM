@@ -6,12 +6,16 @@ using namespace std;
 
 class Gene {
 public:
-  void readMotifsFoundOnGene(fstream& fin);
-  int totalMotifsFoundInGene(int& x, int& y);
-  bool isMotifFoundOnGene(const int& i, const int& y) { return motifFoundOnGene[y][i]; }
+  string getDnaSegment(const int& x) { return dnaSegment[x]; }
+  int getMotifOnGene(const int& x, const int& y) { return motifOnGene[x][y]; }
+  void updateMotifsOnGene(const int& x);
+  void clearMotifsOnGene(int x);
+  void clearMotifOnGene(int x, int y) { motifOnGene[x][y] = 0; }
+  void readMotifsOnGene(fstream& fin);
+  void totalGenesWMotif(int& x, int& y);
 private:
   string dnaSegment[10000];
-  short motifFoundOnGene[244][10000];
+  short motifOnGene[244][10000];
 };
 
 #endif

@@ -22,3 +22,6 @@ int Motif::getMaxMotif() {
   }
   return indexOfMax;
 }
+void Motif::updateBindingSites(const int& x) {
+  setNumTranscriptionBindingSites(0, x);
+}

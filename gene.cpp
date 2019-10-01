@@ -5,7 +5,7 @@
 #include <cstdlib>
 using namespace std;
 
-void Gene::readMotifsFoundOnGene(fstream& fin) {
+void Gene::readMotifsOnGene(fstream& fin) {
 
     char dnaSeg[25];
     char motifFound[0];
@@ -15,13 +15,23 @@ void Gene::readMotifsFoundOnGene(fstream& fin) {
       dnaSegment[j] = dnaSeg;
       for (int i = 0; i < 244; ++i) {
         fin.getline(motifFound, 256, ',');
-        motifFoundOnGene[i][j] = atoi(motifFound);
+        motifOnGene[i][j] = atoi(motifFound);
       }
     }
 }
-int Gene::totalMotifsFoundInGene(int& x, int& y) {
-  x = 0;
+void Gene::totalGenesWMotif(int& x, int& y) {
+  y = 0;
   for (int i = 0; i < 10000; ++i) {
-    if (isMotifFoundOnGene(i, y)) x++;
+    if (getMotifOnGene(x, i)) y++;
+  }
+}
+void Gene::updateMotifsOnGene(const int& x) {
+  for (int i = 0; i < 10000; ++i) {
+    if (getMotifOnGene(x, i)) clearMotifsOnGene(i);
+  }
+}
+void Gene::clearMotifsOnGene(int x) {
+  for (int i = 0; i < 244; ++i) {
+    clearMotifOnGene(i, x);
   }
 }
