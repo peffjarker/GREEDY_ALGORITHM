@@ -12,12 +12,16 @@ void Gene::readMotifsFoundOnGene(fstream& fin) {
 
     for (int j = 0; j < 10000; ++j) {
       fin.getline(dnaSeg, 256, ',');
-      cout << dnaSeg << endl;
+      dnaSegment[j] = dnaSeg;
       for (int i = 0; i < 244; ++i) {
         fin.getline(motifFound, 256, ',');
         motifFoundOnGene[i][j] = atoi(motifFound);
-        cout << motifFoundOnGene[i][j];
       }
-      cout << endl;
     }
+}
+int Gene::totalMotifsFoundInGene(int& x, int& y) {
+  x = 0;
+  for (int i = 0; i < 10000; ++i) {
+    if (isMotifFoundOnGene(i, y)) x++;
+  }
 }

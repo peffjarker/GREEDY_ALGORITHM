@@ -11,3 +11,14 @@ void Motif::readMotifNames(fstream& fin) {
         motifName[i] = tempMotifName;         // TRANSFERS FROM TEMP TO CLASS DATA
     }
 }
+int Motif::getMaxMotif() {
+  int indexOfMax = 0;
+  int maxNum;
+  for (int i = 0; i < 244; ++i) {
+    if (getNumTranscriptionBindingSites(i) > getNumTranscriptionBindingSites(indexOfMax)) {
+      indexOfMax = i;
+      maxNum = getNumTranscriptionBindingSites(i);
+    }
+  }
+  return indexOfMax;
+}
