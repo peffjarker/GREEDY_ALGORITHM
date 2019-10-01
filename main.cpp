@@ -8,10 +8,19 @@ using namespace std;
 
 int main() {
 
-  Gene genes;
+  Gene data;
+  Motif names;
+  fstream fin;
+  fin.open("AP2.csv");                       // OPENS FILE
 
-
-  genes.read_record();
+  if (fin.is_open()) {                       // CONFIRMS FILE OPEN
+    char trash[0];                           // GETS RID OF WHITE SPACE
+    fin.getline(trash, 256, ',');            // BEFORE THE SEQ NAMES
+    names.readMotifNames(fin);
+    data.readMotifsFoundOnGene(fin);
+  } else {
+    cout << "Error opening file." << endl;
+  }
 
   return 0;
 
