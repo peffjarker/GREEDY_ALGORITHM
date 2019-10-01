@@ -35,7 +35,7 @@ void Gene::readMotifsFoundOnGene(fstream& fin) {
 
       for (int i = 0; i < 244; ++i) {
         fin.getline(motifFound, 256, ',');
-        motifFoundOnGene[i] = atoi(motifFound);
+        motifFoundOnGene[j][i] = atoi(motifFound);
         cout << motifFoundOnGene[i];
       }
     }

@@ -10,7 +10,7 @@ public:
   void readMotifNames(fstream& fin);
 private:
   string motifNames[244];
-  int numTranscriptionBindingSites[10000];
+  int numTranscriptionBindingSites[244];
 };
 
 #endif

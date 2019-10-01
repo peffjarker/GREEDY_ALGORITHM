@@ -10,7 +10,7 @@ public:
   void readMotifsFoundOnGene(fstream& fin);
 private:
   string dnaSegment[10000];
-  int motifFoundOnGene[244];
+  int motifFoundOnGene[10000][244];
 };
 
 #endif
