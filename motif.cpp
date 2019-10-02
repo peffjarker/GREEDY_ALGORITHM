@@ -23,5 +23,6 @@ int Motif::getMaxMotif() {
   return indexOfMax;
 }
 void Motif::updateBindingSites(const int& x) {
-  setNumTranscriptionBindingSites(0, x);
-}
+  setNumTranscriptionBindingSites(0, x); // THIS IS CALLED AFTER MOTIF IS ADDED
+}                                        // TO COVERAGE SET. IT CLEARS THE NUM
+                                         // OF BINDING SITES FOR THAT MOTIF

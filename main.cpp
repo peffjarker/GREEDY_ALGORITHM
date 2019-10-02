@@ -29,11 +29,13 @@ int main() {
     names.setNumTranscriptionBindingSites(y, i);
   }
 
+  int delta = 50; // DELTA 150/10000 = 1.5%
   do {
-    if (names.getNumTranscriptionBindingSites(names.getMaxMotif()) == 0) {
+    if (names.getNumTranscriptionBindingSites(names.getMaxMotif()) < delta) { //
+      cout << "The total number of genes covered is " << total << endl;
       return 0;
     } else {
-      total += names.getMaxMotif();
+      total += names.getNumTranscriptionBindingSites(names.getMaxMotif());
       cout << "Motif " << names.getMotifName(names.getMaxMotif()) << " covers "
            << names.getNumTranscriptionBindingSites(names.getMaxMotif())
            << " genes." << endl;
