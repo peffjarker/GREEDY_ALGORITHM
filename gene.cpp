@@ -13,7 +13,7 @@ void Gene::readMotifsOnGene(fstream& fin) {
       dnaSegment[j] = dnaSeg;
       for (int i = 0; i < 244; ++i) {         // CHECK 244 MOTIFS ON jth LINE OF INPUT
         fin.getline(motifFound, 256, ',');
-        motifOnGene[i][j] = atoi(motifFound); // CONVERTS CH ARRAY TO INT, SET MATRIX
+        motifOnGene[i][j] = atoi(motifFound); // CONVERTS CH ARRAY TO INT, SETS MATRIX
       }
     }
 }

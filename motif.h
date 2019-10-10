@@ -13,10 +13,9 @@ public:
   void readMotifNames(fstream& fin);
   int getMaxMotif();
   void updateBindingSites(const int& x);
-  void displayNameAndNumSites();
 private:
-  string motifName[244];
-  int numTranscriptionBindingSites[244];
+  string motifName[244];                 // STORES 244 MOTIF NAMES
+  int numTranscriptionBindingSites[244]; // STORES NUMBER OF GENES COVERED BY [] MOTIF
 };
 
 #endif

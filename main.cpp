@@ -11,9 +11,12 @@ Main - driver function
 4. Reads and sets data for motifOnGene[][]
 5. Calculates total genes covered by each motif
 6. Finds motif with largest numTranscriptionBindingSites[]
-7. Add that motif to the coverage set
+7. Add that motif to the feature set
 8. Output that motif name and the number of genes it covers
-9. Removes
+9. Removes that motif and the genes it covers from matrix motifOnGene[][]
+10. Finds the motif with next largest numTranscriptionBindingSites
+11. Checks if the next largest value is greater than delta, if true, loops back to step 7
+12. If false, it outputs the total number of genes covered and exits
 */
 
 int main() {
@@ -32,11 +35,11 @@ int main() {
     char trash[0];                           // GETS RID OF WHITE SPACE
     fin.getline(trash, 256, ',');            // BEFORE THE SEQ NAMES
     names.readMotifNames(fin);               // READS AND SETS 244 MOTIF NAMES
-    data.readMotifsOnGene(fin);              // READS AND SETS DATA FOR MOTIF COVERAGE
+    data.readMotifsOnGene(fin);              // READS AND SETS DATA FOR MOTIF FEATURE
                                              // FOR ALL 10000 GENES
     for (int i = 0; i < 244; ++i) {                // Y IS INCREMENTED in totalGenesWMotif [0:10000]
       data.totalGenesWMotif(i, y);                 // FINDS TOTAL GENES COVERED BY MOTIF[i]
-      names.setNumTranscriptionBindingSites(y, i); // USES TOTAL FOUND SET COVERAGE TO ALL MOTIFS
+      names.setNumTranscriptionBindingSites(y, i); // USES TOTAL FOUND SET FEATURE TO ALL MOTIFS
     }
     do {
       // END CASE: IF THERE IS NOT A MOTIF THAT COVERS MORE THAN THE DELTA
@@ -46,7 +49,7 @@ int main() {
         return 0;
       } else {
         // THERE IS A MOTIF THAT COVERS MORE THAN DELTA
-        // THE PROGRAM ADDS COVERAGE OF REMAINING GENES FOR THAT MOTIF
+        // THE PROGRAM ADDS FEATURE OF REMAINING GENES FOR THAT MOTIF
         // OUTPUTS WHICH MOTIF AND THE NUMBER OF REMAINING GENES IT COVERS
         total += names.getNumTranscriptionBindingSites(names.getMaxMotif());
         cout << names.getMotifName(names.getMaxMotif()) << " covers: "
@@ -54,13 +57,13 @@ int main() {
              << " genes" << endl;
         // AFTER MOTIF IS OUTPUTTED, THAT MOTIF AND GENE NEED TO BE REMOVED
         // FROM CONSIDERATION, THE FOLLOWING TWO FUNCTIONS CLEAR EXISTING DATA
-        // FOR MOTIFS THAT WERE ADDED TO THE COVERAGE SET AND THE GENES THOSE
+        // FOR MOTIFS THAT WERE ADDED TO THE FEATURE SET AND THE GENES THOSE
         // MOTIFS COVER
         data.updateMotifsOnGene(names.getMaxMotif());
         names.updateBindingSites(names.getMaxMotif());
         for (int i = 0; i < 244; ++i) {
-          // RECALCULATES THE MOTIF COVERAGE (not including motif added to
-          // coverage set and genes covered by that motif) AND SETS numTranscriptionBindingSites
+          // RECALCULATES THE MOTIF FEATURE (not including motif added to
+          // feature set and genes covered by that motif) AND SETS numTranscriptionBindingSites
           data.totalGenesWMotif(i, y);
           names.setNumTranscriptionBindingSites(y, i);
         }

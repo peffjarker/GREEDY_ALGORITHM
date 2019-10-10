@@ -15,8 +15,9 @@ public:
   void readMotifsOnGene(fstream& fin);
   void totalGenesWMotif(int& x, int& y);
 private:
-  string dnaSegment[10000];
-  short motifOnGene[244][10000];
+  string dnaSegment[10000];      // STORES THE NAME OF 10000 INPUTTED DNA SEGMENTS
+  short motifOnGene[244][10000]; // STORES 1 AT [x][y] IF MOTIF X COVERS GENE Y
+                                 // ELSE IT STORES 0 (motif X doesn't cover gene Y)
 };
 
 #endif
