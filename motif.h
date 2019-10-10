@@ -1,8 +1,8 @@
 #ifndef MOTIF
 #define MOTIF
 
-#include <iostream>
 #include <cstdlib>
+#include <fstream>
 using namespace std;
 
 class Motif {

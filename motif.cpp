@@ -1,16 +1,14 @@
 #include "motif.h"
-#include <fstream>
-#include <iostream>
-#include <cstdlib>
-using namespace std;
 
+// READS THE MOTIF NAMES FROM INPUT AND STORES THEM INTO motifName[i]
 void Motif::readMotifNames(fstream& fin) {
-    char tempMotifName[244];                   // TEMP STORAGE FOR MOTIF NAME
+    char tempMotifName[244];                  // TEMP STORAGE FOR MOTIF NAME
     for (int i = 0; i < 244; ++i) {           // STORES 244 MOTIF NAMES
         fin.getline(tempMotifName, 256, ','); // READS AND STORES IN TEMP STORAGE
         motifName[i] = tempMotifName;         // TRANSFERS FROM TEMP TO CLASS DATA
     }
 }
+// RETURNS THE INDEX OF THE MAX MOTIF
 int Motif::getMaxMotif() {
   int indexOfMax = 0;
   int maxNum;
@@ -22,7 +20,8 @@ int Motif::getMaxMotif() {
   }
   return indexOfMax;
 }
+// CLEARS THE NUMBER OF BINDING SITES FOR A MOTIF (called after motif is added
+// to coverage set.)
 void Motif::updateBindingSites(const int& x) {
-  setNumTranscriptionBindingSites(0, x); // THIS IS CALLED AFTER MOTIF IS ADDED
-}                                        // TO COVERAGE SET. IT CLEARS THE NUM
-                                         // OF BINDING SITES FOR THAT MOTIF
+  setNumTranscriptionBindingSites(0, x);
+}
