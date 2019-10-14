@@ -19,60 +19,58 @@ Main - driver function
 12. If false, it outputs the total number of genes covered and exits
 */
 
+
 int main() {
-
-  Gene data;
+  void *mem = malloc(sizeof(Gene));
+  Gene* data = new (mem) Gene();
   Motif names;
-  fstream fin;
-  string setCover;
-  int indexOfMaxMotif;
+  void *memFin = malloc(sizeof(fstream));
+  fstream* fin = new (memFin) fstream;
   int total = 0;
-  int delta = 50;                            // DELTA 50/10000 = .5%
-  int y = 0;
-  fin.open("AP2.csv");                       // OPENS FILE
-
-  if (fin.is_open()) {                       // CONFIRMS FILE OPEN
+  int delta = 500;                            // DELTA 50/10000 = .5%
+  int y = 0;                                 // USED AS A VARIABLE GENE COVERAGE IN MOTIFS
+  fin -> open("training2.csv");
+  if (fin -> is_open()) {                       // CONFIRMS FILE OPEN
     char trash[0];                           // GETS RID OF WHITE SPACE
-    fin.getline(trash, 256, ',');            // BEFORE THE SEQ NAMES
+    fin -> getline(trash, 256, ',');            // BEFORE THE SEQ NAMES
     names.readMotifNames(fin);               // READS AND SETS 244 MOTIF NAMES
-    data.readMotifsOnGene(fin);              // READS AND SETS DATA FOR MOTIF FEATURE
+    data -> readMotifsOnGene(fin);              // READS AND SETS DATA FOR MOTIF FEATURE
                                              // FOR ALL 10000 GENES
-    for (int i = 0; i < 244; ++i) {                // Y IS INCREMENTED in totalGenesWMotif [0:10000]
-      data.totalGenesWMotif(i, y);                 // FINDS TOTAL GENES COVERED BY MOTIF[i]
+    for (int i = 0; i < 107; ++i) {                // Y IS INCREMENTED in totalGenesWMotif [0:10000]
+      data -> totalGenesWMotif(i, y);                 // FINDS TOTAL GENES COVERED BY MOTIF[i]
       names.setNumTranscriptionBindingSites(y, i); // USES TOTAL FOUND SET FEATURE TO ALL MOTIFS
     }
-    do {
-      // END CASE: IF THERE IS NOT A MOTIF THAT COVERS MORE THAN THE DELTA
-      // (in this case delta = 50), IT OUTPUTS THE FINAL RESULTS AND EXITS
-      if (names.getNumTranscriptionBindingSites(names.getMaxMotif()) < delta) {
-        cout << "\nThe total number of genes covered is " << total << endl;
-        return 0;
-      } else {
-        // THERE IS A MOTIF THAT COVERS MORE THAN DELTA
-        // THE PROGRAM ADDS FEATURE OF REMAINING GENES FOR THAT MOTIF
-        // OUTPUTS WHICH MOTIF AND THE NUMBER OF REMAINING GENES IT COVERS
-        total += names.getNumTranscriptionBindingSites(names.getMaxMotif());
-        cout << names.getMotifName(names.getMaxMotif()) << " covers: "
-             << names.getNumTranscriptionBindingSites(names.getMaxMotif())
-             << " genes" << endl;
-        // AFTER MOTIF IS OUTPUTTED, THAT MOTIF AND GENE NEED TO BE REMOVED
-        // FROM CONSIDERATION, THE FOLLOWING TWO FUNCTIONS CLEAR EXISTING DATA
-        // FOR MOTIFS THAT WERE ADDED TO THE FEATURE SET AND THE GENES THOSE
-        // MOTIFS COVER
-        data.updateMotifsOnGene(names.getMaxMotif());
-        names.updateBindingSites(names.getMaxMotif());
-        for (int i = 0; i < 244; ++i) {
-          // RECALCULATES THE MOTIF FEATURE (not including motif added to
-          // feature set and genes covered by that motif) AND SETS numTranscriptionBindingSites
-          data.totalGenesWMotif(i, y);
-          names.setNumTranscriptionBindingSites(y, i);
+
+    int tmpNegClasses = 0;
+    int indexOfMaxMotif = 0;
+    int positiveClassesFromMaxMotif = 0;
+
+    for (int i = 0; i < 107; ++i) {
+      int tmpPosClasses = 0;
+      tmpNegClasses = 0;
+      for (int j = 0; j < 14000; ++j) {
+        if (data -> getMotifOnGene(i,j) == 1 && data -> getClassOfGene(j) == "1") {
+          tmpPosClasses++;
+          tmpNegClasses++;
         }
       }
-    } while(1); // THIS WHILE LOOP RUNS UNTIL IT IS RETURNED INTERALLY
+      if (tmpPosClasses > positiveClassesFromMaxMotif) {
+        indexOfMaxMotif = i;
+        positiveClassesFromMaxMotif = tmpPosClasses;
+      }
+    }
+
+    cout << names.getMotifName(indexOfMaxMotif) << " has " << positiveClassesFromMaxMotif
+         << " positive classes" << " & " << tmpNegClasses << " negative classes." << endl;
+
+    return 0;
+
   } else {
     // ERROR IF INPUT FILE NOT FOUND
     cout << "Error opening file." << endl;
   }
-  fin.close();
+  data -> ~Gene();
+  fin -> close();
+  fin -> ~fstream();
   return 0;
 }

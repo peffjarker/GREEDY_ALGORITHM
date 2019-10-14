@@ -1,10 +1,10 @@
 #include "motif.h"
 
 // READS THE MOTIF NAMES FROM INPUT AND STORES THEM INTO motifName[i]
-void Motif::readMotifNames(fstream& fin) {
-    char tempMotifName[244];                  // TEMP STORAGE FOR MOTIF NAME
-    for (int i = 0; i < 244; ++i) {           // STORES 244 MOTIF NAMES
-        fin.getline(tempMotifName, 256, ','); // READS AND STORES IN TEMP STORAGE
+void Motif::readMotifNames(fstream* fin) {
+    char tempMotifName[107];                  // TEMP STORAGE FOR MOTIF NAME
+    for (int i = 0; i < 107; ++i) {           // STORES 244 MOTIF NAMES
+        fin -> getline(tempMotifName, 256, ','); // READS AND STORES IN TEMP STORAGE
         motifName[i] = tempMotifName;         // TRANSFERS FROM TEMP TO CLASS DATA
     }
 }
@@ -12,7 +12,7 @@ void Motif::readMotifNames(fstream& fin) {
 int Motif::getMaxMotif() {
   int indexOfMax = 0;
   int maxNum;
-  for (int i = 0; i < 244; ++i) {
+  for (int i = 0; i < 107; ++i) {
     if (getNumTranscriptionBindingSites(i) > getNumTranscriptionBindingSites(indexOfMax)) {
       indexOfMax = i;
       maxNum = getNumTranscriptionBindingSites(i);
