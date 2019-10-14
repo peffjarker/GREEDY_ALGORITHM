@@ -11,7 +11,6 @@ void Gene::readMotifsOnGene(fstream* fin) {
 
     for (int j = 0; j < 14000; ++j) {         // RUNS FOR 14000 LINES OF INPUT
       fin -> getline(dnaSeg, 256, ',');
-      cout << endl << j << endl;
       for (int i = 0; i < 107; ++i) {         // CHECK 107 MOTIFS ON jth LINE OF INPUT
         fin -> getline(motifFound, 256, ',');
         motifOnGene[i][j] = atoi(motifFound); // CONVERTS CH ARRAY TO INT, SETS MATRIX

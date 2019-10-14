@@ -25,7 +25,7 @@ public:
 private:
   short motifOnGene[107][14000]; // STORES 1 AT [x][y] IF MOTIF X COVERS GENE Y
                                  // ELSE IT STORES 0 (motif X doesn't cover gene Y)
-  string classOfGene[14000];            // STORES CLASS OF EACH GENE
+  string classOfGene[14000];     // STORES CLASS OF EACH GENE
 };
 
 #endif
