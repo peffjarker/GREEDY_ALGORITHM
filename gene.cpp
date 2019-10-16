@@ -15,7 +15,6 @@ void Gene::readMotifsOnGene(fstream* fin) {
         fin -> getline(motifFound, 256, ',');
         motifOnGene[i][j] = atoi(motifFound); // CONVERTS CH ARRAY TO INT, SETS MATRIX
       }
-      cout << endl;
       fin -> getline(tmpClassOfGene, 256, ',');
       string s(tmpClassOfGene);
       classOfGene[j] = s;

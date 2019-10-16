@@ -3,7 +3,8 @@
 #include "motif.h"
 #include "gene.h"
 #include <vector>
-
+#include <numeric>
+#include <map>
 /*
 Main - driver function
 1. Declares variables and opens input file
@@ -20,7 +21,7 @@ Main - driver function
 12. If false, it outputs the total number of genes covered and exits
 */
 
-void decisionTree(vector<int> startIndex, vector<int>& outputLeft, vector<int>& outputRight, Gene* data);
+void decisionTree(vector<int>& startIndex, Gene* data, map<int,vector<int>>& tree, const int curNode, map<int,pair<int,int>>& maxGoodnessMap);
 
 int main() {
   void *mem = malloc(sizeof(Gene));
@@ -42,103 +43,44 @@ int main() {
       data -> totalGenesWMotif(i, y);                 // FINDS TOTAL GENES COVERED BY MOTIF[i]
       names.setNumTranscriptionBindingSites(y, i); // USES TOTAL FOUND SET FEATURE TO ALL MOTIFS
     }
-    double tL = 0;
-    double tR = 0;
-    double pL = 0;
-    double pR = 0;
-    double posWithMotif;
-    double negWithMotif;
-    double posWithoutMotif;
-    double negWithoutMotif;
-    double pJtL = 0;
-    double pJtR = 0;
-    double negAbs = 0;
-    double posAbs = 0;
-    double summation = 0;
-    double goodness = 0;
-    double maxGoodness = 0;
-    int indexOfMaxGoodness = 0;
 
-    // FINDS TL AND TR OF EACH MOTIF
-    for (int i = 0; i < 107; ++i) {
-      tL = 0;
-      tR = 0;
-      posWithMotif = 0;
-      negWithMotif = 0;
-      posWithoutMotif = 0;
-      negWithoutMotif = 0;
-      negAbs = 0;
-      posAbs = 0;
-      summation = 0;
-      goodness = 0;
 
-      for (int j = 0; j < 14000; ++j) {
-          if (data -> getMotifOnGene(i,j) == 1) {
-            tL++;
-            if (data -> getClassOfGene(j) == "1") {
-              posWithMotif++;
-            } else {
-              negWithMotif++;
-            }
-          } else if (data -> getMotifOnGene(i,j) == 0) {
-            tR++;
-            if (data -> getClassOfGene(j) == "1") {
-              posWithoutMotif++;
-            } else {
-              negWithoutMotif++;
-            }
-          }
+
+    map<int, std::vector<int>> tree;
+    map<int,pair<int,int>> maxGoodnessMap;
+    int curNode = 1;
+    std::vector<int> startIndex(14000) ; // vector with 100 ints.
+    std::iota (std::begin(startIndex), std::end(startIndex), 0); // Fill with 0, 1, ..., 14000.
+    tree.insert(std::pair<int,std::vector<int>>(1,startIndex)); //intialize first node of tree
+
+
+   // decisionTree(startIndex, data, tree, curNode);
+    //curNode++;
+    //cout << tree[1].pop();
+
+
+    //for(int i = curNode; i < 20; i++)
+      decisionTree(tree[curNode], data, tree, curNode, maxGoodnessMap);//create tree
+
+
+      cout<< "           HOW TO READ THE DATA" << endl;  //our super fancy gui
+      cout<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+      cout<< "Outputted is a list of the nodes in the tree."<<endl;
+      cout<< "To visualize it, place each node in order on the tree from left to right."<<endl;
+      cout<< "Since its a binary tree, each level, will have 2^n nodes, where n=level"<<endl;
+      cout<< "e.g. \n  1\n  /\\ \n 2  3\n/\\  /\\\n4 5 6 7"<<endl<<endl;
+    for(auto mapIt = begin(maxGoodnessMap); mapIt != end(maxGoodnessMap); ++mapIt)//iterator to output data
+      {
+
+           std::cout << mapIt-> first << ": \n Name of motif: " << names.getMotifName((mapIt-> second).first) << "\n Number of genes in group: " <<(mapIt-> second).second;
+
+          /*for(auto c : mapIt->second)
+          {
+              std::cout << c << " ";
+          }*/
+
+          std::cout << std::endl<<endl;
       }
-      pL = tL/14000;
-      pR = tR/14000;
-      negAbs = abs(negWithMotif/tL - negWithoutMotif/tR);
-      posAbs = abs(posWithMotif/tL - posWithoutMotif/tR);
-      summation = negAbs + posAbs;
-      goodness = 2*(pL)*(pR)*summation;
-      if (goodness > maxGoodness) {
-        maxGoodness = goodness;
-        indexOfMaxGoodness = i;
-      }
-      cout << "Motif " << i << " tL: " << tL << " tR: " << tR
-           << " pL: "  << pL
-           << " pR: "  << pR
-           << " goodness: " << goodness
-           << endl;
-    }
-    cout << "Max goodness: " << maxGoodness << endl;
-
-    vector<int> leftIndex;
-    vector<int> rightIndex;
-    for (int j = 0; j < 14000; ++j) {
-        if (data -> getMotifOnGene(indexOfMaxGoodness,j) == 1) {
-          leftIndex.push_back(j);
-        } else if (data -> getMotifOnGene(indexOfMaxGoodness,j) == 0) {
-          rightIndex.push_back(j);
-        }
-    }
-
-    for (int j = 0; j < rightIndex.size(); ++j) {
-      cout << data -> getClassOfGene(rightIndex[j]);
-    }
-
-    cout << endl;
-    for (int j = 0; j < leftIndex.size(); ++j) {
-      cout << data -> getClassOfGene(leftIndex[j]);
-    }
-
-    vector<int> leftLeftIndex;
-    vector<int> rightLeftIndex;
-
-    decisionTree(leftIndex, leftLeftIndex, rightLeftIndex, data);
-
-    for (int j = 0; j < rightLeftIndex.size(); ++j) {
-      cout << data -> getClassOfGene(rightLeftIndex[j]);
-    }
-
-    cout << endl;
-    for (int j = 0; j < leftLeftIndex.size(); ++j) {
-      cout << data -> getClassOfGene(leftLeftIndex[j]);
-    }
 
 
 
@@ -152,63 +94,98 @@ int main() {
   return 0;
 }
 
-void decisionTree(vector<int> startIndex, vector<int>& outputLeft, vector<int>& outputRight, Gene* data) {
-  double maxGoodness = 0;
-  int indexOfMaxGoodness = 0;
-  for (int i = 0; i < 107; ++i) {
-    double tL = 0;
-    double tR = 0;
-    double pR = 0;
-    double pL = 0;
-    double posWithMotif = 0;
-    double negWithMotif = 0;
-    double posWithoutMotif = 0;
-    double negWithoutMotif = 0;
-    double negAbs = 0;
-    double posAbs = 0;
-    double summation = 0;
-    double goodness = 0;
 
-    for (int j = 0; j < startIndex.size(); ++j) {
-        if (data -> getMotifOnGene(i,startIndex[j]) == 1) {
-          tL++;
-          if (data -> getClassOfGene(startIndex[j]) == "1") {
-            posWithMotif++;
-          } else {
-            negWithMotif++;
+void decisionTree(vector<int>& startIndex, Gene* data, map<int,vector<int>>& tree, const int curNode, map<int,pair<int,int>>& maxGoodnessMap) {
+
+  int curNodeLeft = curNode*2;
+  int curNodeRight = curNode*2+1;
+    bool allSameClass = true;
+    int firstValue = startIndex[0];
+    for (int i = 0; i < startIndex.size(); ++i) {
+      if (stoi(data -> getClassOfGene(startIndex[i])) != firstValue) {
+        allSameClass = false;
+      }
+    }//ways to halt tree making process
+    if (allSameClass){//if group has all same class
+      //cout << "HOLY SHIT WE GOT TO HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!: " <<curNode<< endl << endl;
+      return;
+    }
+    if (startIndex.size() < 2){//if group only has one membber {
+      //cout << "Fuck it big enough: " << curNode << endl <<endl;
+      return;
+    }
+    if (curNode > 14000){//if 14000 leaf nodes exist {
+      //cout << "CurNode greater than 14000: " <<curNode<< endl<<endl;
+      return;
+    }
+    vector<int> outputLeft;
+    vector<int> outputRight;
+    double maxGoodness = 0;
+    int indexOfMaxGoodness = 0;
+    for (int i = 0; i < 107; ++i) { //calculate phi for each motif
+      double tL = 0;
+      double tR = 0;
+      double pR = 0;
+      double pL = 0;
+      double posWithMotif = 0;
+      double negWithMotif = 0;
+      double posWithoutMotif = 0;
+      double negWithoutMotif = 0;
+      double negAbs = 0;
+      double posAbs = 0;
+      double summation = 0;
+      double goodness = 0;
+
+      for (int j = 0; j < startIndex.size(); ++j) {
+          if (data -> getMotifOnGene(i,startIndex[j]) == 1) {
+            tL++;
+            if (data -> getClassOfGene(startIndex[j]) == "1") {
+              posWithMotif++;
+            } else {
+              negWithMotif++;
+            }
+          } else if (data -> getMotifOnGene(i,startIndex[j]) == 0) {
+            tR++;
+            if (data -> getClassOfGene(startIndex[j]) == "1") {
+              posWithoutMotif++;
+            } else {
+              negWithoutMotif++;
+            }
           }
-        } else if (data -> getMotifOnGene(i,startIndex[j]) == 0) {
-          tR++;
-          if (data -> getClassOfGene(startIndex[j]) == "1") {
-            posWithoutMotif++;
-          } else {
-            negWithoutMotif++;
-          }
+      }
+      pL = tL/startIndex.size();
+      pR = tR/startIndex.size();
+      negAbs = abs(negWithMotif/tL - negWithoutMotif/tR);
+      posAbs = abs(posWithMotif/tL - posWithoutMotif/tR);
+      summation = negAbs + posAbs;
+      goodness = 2*(pL)*(pR)*summation;
+      if (goodness > maxGoodness) {
+        maxGoodness = goodness;
+        indexOfMaxGoodness = i;
+      }
+
+      if (maxGoodness <= 0.0005) return;
+
+    }
+
+
+    //startIndex.push_back(indexOfMaxGoodness);
+    maxGoodnessMap.insert(pair<int,pair<int,int>>(curNode,make_pair(indexOfMaxGoodness,startIndex.size())));
+    //cout << "startIndex[indexOfMaxGoodness] = " << startIndex.back() << endl;
+    for (int j = 0; j < startIndex.size(); ++j) {//make left node
+        if (data -> getMotifOnGene(indexOfMaxGoodness,startIndex[j]) == 1) {
+          outputLeft.push_back(startIndex[j]);
+          //cout << "Left: " << j <<  outputLeft.back() << endl;
+        } else if (data -> getMotifOnGene(indexOfMaxGoodness,startIndex[j]) == 0) {//make right node
+          outputRight.push_back(startIndex[j]);
+          //cout << "Right: " << j << outputRight.back() <<endl;
         }
     }
-    pL = tL/14000;
-    pR = tR/14000;
-    negAbs = abs(negWithMotif/tL - negWithoutMotif/tR);
-    posAbs = abs(posWithMotif/tL - posWithoutMotif/tR);
-    summation = negAbs + posAbs;
-    goodness = 2*(pL)*(pR)*summation;
-    if (goodness > maxGoodness) {
-      maxGoodness = goodness;
-      indexOfMaxGoodness = i;
-    }
-    cout << "Motif " << i << " tL: " << tL << " tR: " << tR
-         << " pL: "  << pL
-         << " pR: "  << pR
-         << " goodness: " << goodness
-         << endl;
-  }
-
-  cout << "Max goodness: " << maxGoodness << endl;
-  for (int j = 0; j < 14000; ++j) {
-      if (data -> getMotifOnGene(indexOfMaxGoodness,j) == 1) {
-        outputLeft.push_back(j);
-      } else if (data -> getMotifOnGene(indexOfMaxGoodness,j) == 0) {
-        outputRight.push_back(j);
-      }
-  }
+    //cout << startIndex.size() << endl;
+    //cout << outputLeft.size() << endl;
+    //cout << outputRight.size() << endl;
+    tree.insert(std::pair<int,std::vector<int>>(curNodeLeft,outputLeft));
+    tree.insert(std::pair<int,std::vector<int>>(curNodeRight,outputRight));
+    decisionTree(tree[curNodeLeft], data, tree, curNodeLeft, maxGoodnessMap); //recusive for each node
+    decisionTree(tree[curNodeRight], data, tree, curNodeRight, maxGoodnessMap);
 }
